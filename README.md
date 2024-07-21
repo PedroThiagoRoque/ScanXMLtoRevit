@@ -16,7 +16,7 @@ Geração de aberturas: Posicionamento de portas e janelas a partir dos dados fo
 ## Estrutura do Projeto
 O projeto é composto pelos seguintes componentes principais:
 
-Blocos Dynamo: File Path, Levels, Wall Types e Family Types.
+Blocos Dynamo: File Path, Levels, Wall Types e Family Types.<br>
 Script Python: lê o arquivo XML indicado, implementa a lógica de interpretação de dados e criação de paredes no Revit utilizando a API Revit.
 
 ## Roadmap
