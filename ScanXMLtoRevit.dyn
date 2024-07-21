@@ -1,0 +1,342 @@
+{
+  "Uuid": "412c7170-1a2e-442e-ac08-3bd448b9b954",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "ScanXMLtoRevit",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference('ProtoGeometry')\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('RevitNodes')\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\n\r\nfrom Autodesk.DesignScript.Geometry import Point as DSPoint, Line as DSLine\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Autodesk.Revit.DB import *\r\n\r\nimport xml.etree.ElementTree as ET\r\nimport math\r\nimport System\r\nimport re\r\n\r\n# Função para converter metros para pés\r\ndef meters_to_feet(meters):\r\n    return meters * 3.28084\r\n\r\n# Função para ler o arquivo XML\r\ndef parse_xml(file_path):\r\n    tree = ET.parse(file_path)\r\n    root = tree.getroot()\r\n    return root\r\n\r\n# Função para multiplicar dois quaternions\r\ndef quaternion_multiply(q1, q2):\r\n    w1, x1, y1, z1 = q1\r\n    w2, x2, y2, z2 = q2\r\n    w = w1*w2 - x1*x2 - y1*y2 - z1*z2\r\n    x = w1*x2 + x1*w2 + y1*z2 - z1*y2\r\n    y = w1*y2 - x1*z2 + y1*w2 + z1*x2\r\n    z = w1*z2 + x1*y2 - y1*x2 + z1*w2\r\n    return (w, x, y, z)\r\n\r\n# Função para calcular o conjugado de um quaternion\r\ndef quaternion_conjugate(q):\r\n    w, x, y, z = q\r\n    return (w, -x, -y, -z)\r\n\r\n# Função para aplicar rotação de um ponto usando quaternion\r\ndef apply_quaternion_rotation(point, origin, q):\r\n    # Converter o ponto para quaternion com w = 0\r\n    p = (0, point.X - origin.X, point.Y - origin.Y, point.Z - origin.Z)\r\n    \r\n    # Calcular a rotação: Q * p * Q^-1\r\n    q_conj = quaternion_conjugate(q)\r\n    q_p = quaternion_multiply(q, p)\r\n    rotated_p = quaternion_multiply(q_p, q_conj)\r\n    \r\n    # Converter de volta para coordenadas\r\n    new_x = rotated_p[1] + origin.X\r\n    new_y = -rotated_p[2] + origin.Y\r\n    new_z = rotated_p[3] + origin.Z\r\n    \r\n    return DSPoint.ByCoordinates(new_x, new_y, new_z)\r\n\r\n# Função para criar a linha base e aplicar a rotação\r\ndef create_and_transform_line(start_point, length, rotation_quat):\r\n    # Criar ponto final da linha no plano XY\r\n    end_point = DSPoint.ByCoordinates(start_point.X + length, start_point.Y, start_point.Z)\r\n    \r\n    # Aplicar rotação ao ponto final\r\n    rotated_end_point = apply_quaternion_rotation(end_point, start_point, rotation_quat)\r\n    \r\n    return [start_point, rotated_end_point]\r\n\r\n# Função para criar paredes no Revit\r\ndef create_walls_in_revit(doc, lines, level, height, wall_family_name):\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    walls = []\r\n    for line in lines:\r\n        start_point = line.StartPoint\r\n        end_point = line.EndPoint\r\n        revit_line = Line.CreateBound(XYZ(start_point.X, start_point.Y, start_point.Z), XYZ(end_point.X, end_point.Y, end_point.Z))\r\n        wall = Wall.Create(doc, revit_line, wall_family_name.Id, level.Id, height, 0.0, False, False)\r\n        walls.append(wall)\r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    return walls\r\n\r\n# Função para ativar um FamilySymbol\r\ndef activate_family_symbol(family_symbol):\r\n    if not family_symbol.IsActive:\r\n        family_symbol.Activate()\r\n        DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument.Document.Regenerate()\r\n\r\n# Função para criar portas e janelas no Revit\r\ndef create_openings_in_revit(doc, walls, wall_data, door_family_name, window_family_name):\r\n    activate_family_symbol(door_family_name)\r\n    activate_family_symbol(window_family_name)\r\n    \r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    for wall, data in zip(walls, wall_data):\r\n        for child in data.findall('child'):\r\n            structure_type = child.get('structure_type')\r\n            if structure_type == 'Door':\r\n                position = child.find('position')\r\n                width = meters_to_feet(float(child.find('width').text))\r\n                height = meters_to_feet(float(child.find('height').text))\r\n                x = meters_to_feet(float(position.get('x')))\r\n                z = meters_to_feet(float(position.get('y')))  # Z do XML vai para Y\r\n                y = meters_to_feet(float(position.get('z')))  # Y do XML vai para Z\r\n                door_point = XYZ(x, y, z)\r\n                door_instance = doc.Create.NewFamilyInstance(door_point, door_family_name, wall, Structure.StructuralType.NonStructural)\r\n            elif structure_type == 'Window':\r\n                position = child.find('position')\r\n                width = meters_to_feet(float(child.find('width').text))\r\n                height = meters_to_feet(float(child.find('height').text))\r\n                x = meters_to_feet(float(position.get('x')))\r\n                z = meters_to_feet(float(position.get('y')))  # Z do XML vai para Y\r\n                y = meters_to_feet(float(position.get('z')))  # Y do XML vai para Z\r\n                window_point = XYZ(x - width / 2, y, z)  # Ajuste para centralizar a janela\r\n                window_instance = doc.Create.NewFamilyInstance(window_point, window_family_name, wall, Structure.StructuralType.NonStructural)\r\n    TransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Lendo o arquivo XML\r\nfile_path = IN[0]\r\nlevel_info = IN[1]\r\nwall_family_name = UnwrapElement(IN[2])\r\ndoor_family_name = UnwrapElement(IN[3])\r\nwindow_family_name = UnwrapElement(IN[4])\r\nxml_data = parse_xml(file_path)\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Certifique-se de que level_info é uma string\r\nlevel_info = str(level_info)\r\nlevel_name_match = re.search(r\"Name=([^,]+),\", level_info)\r\nif level_name_match:\r\n    level_name = level_name_match.group(1)\r\nelse:\r\n    raise ValueError(f\"Invalid level format: {level_info}\")\r\n\r\nlevels = FilteredElementCollector(doc).OfClass(Level).ToElements()\r\nlevel = next((lvl for lvl in levels if lvl.Name == level_name), None)\r\n\r\nif level is None:\r\n    raise ValueError(f\"Level with name '{level_name}' not found.\")\r\n\r\nlines = []\r\npoints = []\r\nwall_data = []\r\n\r\n# Criando linhas a partir dos dados XML\r\nfor wall in xml_data.findall('object[@structure_type=\"Wall\"]'):\r\n    length = meters_to_feet(float(wall.find('length').text))\r\n    height = meters_to_feet(float(wall.find('height').text))\r\n    pos = wall.find('position')\r\n    x = meters_to_feet(float(pos.get('x')))\r\n    z = meters_to_feet(float(pos.get('y')))  # Z do XML vai para Y\r\n    y = meters_to_feet(float(pos.get('z')))  # Y do XML vai para Z\r\n    \r\n    start_point = DSPoint.ByCoordinates(x, y, z)\r\n    \r\n    rot = wall.find('rotation')\r\n    w = float(rot.get('w'))\r\n    x_rot = float(rot.get('x'))\r\n    z_rot = float(rot.get('y'))  # Z do XML vai para Y\r\n    y_rot = float(rot.get('z'))  # Y do XML vai para Z\r\n    \r\n    rotation_quat = (w, x_rot, z_rot, y_rot)\r\n    \r\n    # Criar e transformar a linha\r\n    line_points = create_and_transform_line(start_point, length, rotation_quat)\r\n    \r\n    line = DSLine.ByStartPointEndPoint(line_points[0], line_points[1])\r\n    lines.append(line)\r\n    points.append(start_point)  # Adicionar o ponto de posição para visualização\r\n    wall_data.append(wall)\r\n\r\n# Criar paredes no Revit com base nas linhas\r\nwalls = create_walls_in_revit(doc, lines, level, height, wall_family_name)\r\n\r\n# Criar portas e janelas no Revit com base nas paredes e nos dados do XML\r\ncreate_openings_in_revit(doc, walls, wall_data, door_family_name, window_family_name)\r\n\r\n# Output para visualização no Dynamo\r\nOUT = (lines, points)\r\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "b99ff2d5d92748a790c571d3ce1896e2",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "c2904e2be95f4f33b2ac413268823aa9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6e75de2de7d94d238973fcb3bc5c6f13",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "30db7b4e78524dd18579b74b8f01ffe1",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bf67e10a923641abaa44be1e9025b020",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4938347b6bb34fcd99b30c1e7f0274ce",
+          "Name": "IN[4]",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1644a58191a240c4bbcece65e2d68103",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "Id": "e34b9d74e3f44d9c9ad869c4f9537604",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ce52756e641b4716a80f04adf31e660d",
+          "Name": "",
+          "Description": "Caminho do arquivo",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
+      "HintPath": "C:\\Users\\PunkRoque\\Documents\\pCON.Planner\\quarto_pipe (1)\\structure.xml",
+      "InputValue": "C:\\Users\\PunkRoque\\Documents\\pCON.Planner\\quarto_pipe (1)\\structure.xml"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
+      "SelectedIndex": 1,
+      "SelectedString": "Nível 1",
+      "Id": "e3e852b540ef45cea64d2808ccf24130",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "947577279f434887b4ccf9b35ba5a4eb",
+          "Name": "Levels",
+          "Description": "O Levels selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selecionar um nível no documento ativo"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.WallTypes, DSRevitNodesUI",
+      "SelectedIndex": 14,
+      "SelectedString": "Genérico - 200 mm - Preenchido",
+      "Id": "171c9097a43f4bd192d0fe9e517b4ded",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "96e9c3fe4824429fba9bdf48084d3de7",
+          "Name": "Wall Type",
+          "Description": "O Wall Type selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todos os tipos de parede disponíveis no documento."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
+      "SelectedIndex": 76,
+      "SelectedString": "M_Folha única:0864 x 2032mm",
+      "Id": "323ca54666b2491fae90b4c981605ddf",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5ed07048be534c0f8e3526ef770afc4b",
+          "Name": "Family Type",
+          "Description": "O Family Type selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todos os tipos de família disponíveis no documento."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
+      "SelectedIndex": 68,
+      "SelectedString": "M_Fixo:0610 x 1220mm",
+      "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "15d9d3af9aff499fa79959814a190ddb",
+          "Name": "Family Type",
+          "Description": "O Family Type selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todos os tipos de família disponíveis no documento."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ce52756e641b4716a80f04adf31e660d",
+      "End": "c2904e2be95f4f33b2ac413268823aa9",
+      "Id": "66a0f173d34f4d41af8db1f7b5e18b4b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "947577279f434887b4ccf9b35ba5a4eb",
+      "End": "6e75de2de7d94d238973fcb3bc5c6f13",
+      "Id": "cccf4b28c6e14577a0e6c18395d090cb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "96e9c3fe4824429fba9bdf48084d3de7",
+      "End": "30db7b4e78524dd18579b74b8f01ffe1",
+      "Id": "f56c90ef58244326a662cf0e24277cc1",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "5ed07048be534c0f8e3526ef770afc4b",
+      "End": "bf67e10a923641abaa44be1e9025b020",
+      "Id": "78079d80cd03445088ab86aeb965804c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "15d9d3af9aff499fa79959814a190ddb",
+      "End": "4938347b6bb34fcd99b30c1e7f0274ce",
+      "Id": "464f9d773be342e1b7fb35dfc8348162",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "structure.xml",
+      "ReferenceType": "External",
+      "Nodes": [
+        "e34b9d74e3f44d9c9ad869c4f9537604"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Propriedades",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Nenhum",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 100.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.3.6394",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Visualização do plano de fundo",
+      "EyeX": 2.571702241897583,
+      "EyeY": 18.510727882385254,
+      "EyeZ": 19.131734848022461,
+      "LookX": -0.96175360679626465,
+      "LookY": -10.857036590576172,
+      "LookZ": -14.438965797424316,
+      "UpX": -0.027559502050280571,
+      "UpY": 0.90996038913726807,
+      "UpZ": -0.41377857327461243
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "b99ff2d5d92748a790c571d3ce1896e2",
+        "Name": "CriandoGeometrias",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 762.91759410682153,
+        "Y": 366.171265763022
+      },
+      {
+        "Id": "e34b9d74e3f44d9c9ad869c4f9537604",
+        "Name": "File Path",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 48.0761794852782,
+        "Y": 192.74892992162862
+      },
+      {
+        "Id": "e3e852b540ef45cea64d2808ccf24130",
+        "Name": "Levels",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 244.73570274112325,
+        "Y": 338.88047968802
+      },
+      {
+        "Id": "171c9097a43f4bd192d0fe9e517b4ded",
+        "Name": "Wall Types",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 105.85372324101405,
+        "Y": 472.31610705087
+      },
+      {
+        "Id": "323ca54666b2491fae90b4c981605ddf",
+        "Name": "Porta Types",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 103.13054717238441,
+        "Y": 615.28285065392345
+      },
+      {
+        "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
+        "Name": "Janela Types",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 155.91487364770239,
+        "Y": 757.825773742255
+      }
+    ],
+    "Annotations": [],
+    "X": 408.69249554275962,
+    "Y": -71.719996448052314,
+    "Zoom": 0.86314762576532511
+  }
+}

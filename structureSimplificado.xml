@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<eoxObjects xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EOX_1.1-PRE4.xsd">
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.225571</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="3.351684" y="0.000000" z="-0.467360" />
+		<rotation w="-0.317320" x="0.000000" y="0.000000" z="0.948318" />
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.078010</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="-2.556000" y="0.000000" z="-1.285511" />
+		<rotation w="0.948318" x="0.000000" y="0.000000" z="0.317320" />
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.211621</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="0.694502" y="0.000000" z="-3.740589" />
+		<rotation w="0.903077" x="0.000000" y="0.000000" z="-0.429478" />
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.208879</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="-0.022923" y="0.000000" z="2.075764" />
+		<rotation w="0.446183" x="0.000000" y="0.000000" z="0.894942" />
+	</object>
+</eoxObjects>
