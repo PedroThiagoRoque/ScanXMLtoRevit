@@ -33,10 +33,10 @@ Script Python: lê o arquivo XML indicado, implementa a lógica de interpretaç�
 - [ ] Refino do posicionamento de janelas nos cômodos.
 
 ## Requisitos
-Revit 2022 ou superior
-Dynamo 2.5 ou superior
-Python 3.x
-Bibliotecas: xml.etree.ElementTree, math, System, re, clr, Autodesk.DesignScript, RevitServices, Autodesk.Revit.DB.
+Revit 2022 ou superior <br>
+Dynamo 2.5 ou superior <br>
+Python 3.x <br>
+Bibliotecas: xml.etree.ElementTree, math, System, re, clr, Autodesk.DesignScript, RevitServices, Autodesk.Revit.DB. 
 
 ## Seja um dos contribuidores
 Quer contribuir com esse projeto? Clique [AQUI](CONTRIBUTING.md) e leia como contribuir.
