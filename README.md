@@ -7,11 +7,11 @@ Este projeto tem como objetivo converter representações de scan 3D de ambiente
 <img src="print.png" alt="Imagem Dynamo">
 
 ## Funcionalidades
-Leitura de Arquivo XML: Leitura de um arquivo XML que contém descrições detalhadas de paredes, portas e janelas, incluindo posição, comprimento, rotação e cor.
-Conversão de Geometria: Conversão das descrições de paredes em linhas representando salas no Revit.
-Entrada de Tipo de Parede e Nível do Projeto: Configuração do tipo de parede, portas e janelas através de Family Types, e seleção de nível do projeto no Revit.
-Geração de Paredes: Construção das paredes no projeto Revit a partir dos dados fornecidos no xml.
-Geração de aberturas: Posicionamento de portas e janelas a partir dos dados fornecidos no xml.
+Leitura de Arquivo XML: Leitura de um arquivo XML que contém descrições detalhadas de paredes, portas e janelas, incluindo posição, comprimento, rotação e cor.<br>
+Conversão de Geometria: Conversão das descrições de paredes em linhas representando salas no Revit.<br>
+Entrada de Tipo de Parede e Nível do Projeto: Configuração do tipo de parede, portas e janelas através de Family Types, e seleção de nível do projeto no Revit.<br>
+Geração de Paredes: Construção das paredes no projeto Revit a partir dos dados fornecidos no xml.<br>
+Geração de aberturas: Posicionamento de portas e janelas a partir dos dados fornecidos no xml.<br>
 
 ## Estrutura do Projeto
 O projeto é composto pelos seguintes componentes principais:
