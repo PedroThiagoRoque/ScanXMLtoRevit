@@ -41,10 +41,8 @@ Bibliotecas: xml.etree.ElementTree, math, System, re, clr, Autodesk.DesignScript
 ## Seja um dos contribuidores
 Quer contribuir com esse projeto? Clique [AQUI](CONTRIBUTING.md) e leia como contribuir.
 
-<!-- CONTACT -->
-## Contact
-Pedro Roque
-Project Link: [https://github.com/PedroThiagoRoque/ScanXMLtoRevit](https://github.com/PedroThiagoRoque/ScanXMLtoRevit)
+## Contato
+Pedro Roque: [https://github.com/PedroThiagoRoque/ScanXMLtoRevit](https://github.com/PedroThiagoRoque/ScanXMLtoRevit)
 
 ## 📝 Licença
 Os scripts python desse projeto estão sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
