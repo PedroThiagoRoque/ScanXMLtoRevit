@@ -25,7 +25,7 @@ Script Python: lê o arquivo XML indicado, implementa a lógica de interpretaç�
 - [X] Seleção de tipo de paredes.
 - [X] Seleção de tipo de portas.
 - [X] Seleção de tipo de janelas.
-- [X]Conversão de metros para pés.
+- [X] Conversão de metros para pés.
 - [X] Cálculo da posição dos pontos a partir de pontos + rotação em quaternion.
 - [X] Criação de cômodos com API Revit.
 - [X] Criação de aberturas nos cômodos com API Revit.
