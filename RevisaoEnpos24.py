@@ -112,6 +112,14 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_name, window_fam
     
     TransactionManager.Instance.EnsureInTransaction(doc)
     for wall, data in zip(walls, wall_data):
+        # Get wall's rotation and position
+        wall_transform = wall.Location.Curve.ComputeDerivatives(0.0, True)
+        wall_origin = wall_transform.Origin
+        wall_direction = wall_transform.BasisX
+        wall_rotation_angle = wall_direction.AngleTo(XYZ(1, 0, 0))
+        if wall_direction.Y < 0:
+            wall_rotation_angle = -wall_rotation_angle
+
         for child in data.findall('child'):
             structure_type = child.get('structure_type')
             position = child.find('position')
@@ -121,48 +129,48 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_name, window_fam
             y = meters_to_feet(float(position.get('y')))
             z = meters_to_feet(float(position.get('z')))
             
-            # Criar ponto original
-            original_point = DSPoint.ByCoordinates(x, y, z)
+            # Door/Window local position
+            local_point = XYZ(x, y, z)
             
-            # Leitura dos quaternions de rotação (se existir)
+            # Apply door/window's local rotation (if any)
             rot = child.find('rotation')
             if rot is not None:
                 w_rot = float(rot.get('w'))
                 x_rot = float(rot.get('x'))
                 y_rot = float(rot.get('y'))
                 z_rot = float(rot.get('z'))
-                rotation_quat = (w_rot, x_rot, y_rot, z_rot)
-                # Transformação dos quaternions
-                rotation_quat = transform_quaternion(rotation_quat)
+                door_rotation_quat = (w_rot, x_rot, y_rot, z_rot)
+                # Convert quaternion to rotation angle (assuming rotation around Z-axis)
+                door_rotation_angle = 2 * math.acos(w_rot)
             else:
-                rotation_quat = None
+                door_rotation_angle = 0
+
+            # Transform local position to global position
+            cos_angle = math.cos(wall_rotation_angle)
+            sin_angle = math.sin(wall_rotation_angle)
+            global_x = wall_origin.X + (local_point.X * cos_angle - local_point.Y * sin_angle)
+            global_y = wall_origin.Y + (local_point.X * sin_angle + local_point.Y * cos_angle)
+            global_z = wall_origin.Z + local_point.Z
+
+            # Create the point in Revit
+            opening_point = XYZ(global_x, global_y, global_z)
             
-            # Aplicar rotação ao ponto (se houver)
-            if rotation_quat is not None:
-                rotated_point = apply_quaternion_rotation(original_point, original_point, rotation_quat)
-            else:
-                rotated_point = original_point
-            
-            # Aplicar transformação ao ponto
-            transformed_point = transform_point(rotated_point)
-            
-            # Ajustar posição para centralizar a abertura (se necessário)
+            # Determine the family symbol based on the structure type
             if structure_type == 'Door':
-                # Criar ponto XYZ para o Revit
-                door_point = XYZ(transformed_point.X, transformed_point.Y, transformed_point.Z)
-                # Criar instância da porta
-                door_instance = doc.Create.NewFamilyInstance(door_point, door_family_name, wall, Structure.StructuralType.NonStructural)
-                # Definir parâmetros de largura e altura (se necessário)
-                # Exemplo: door_instance.get_Parameter(BuiltInParameter.DOOR_WIDTH).Set(width)
+                family_symbol = door_family_name
             elif structure_type == 'Window':
-                # Ajustar ponto para centralizar a janela
-                adjusted_point = DSPoint.ByCoordinates(transformed_point.X - width / 2, transformed_point.Y, transformed_point.Z)
-                window_point = XYZ(adjusted_point.X, adjusted_point.Y, adjusted_point.Z)
-                # Criar instância da janela
-                window_instance = doc.Create.NewFamilyInstance(window_point, window_family_name, wall, Structure.StructuralType.NonStructural)
-                # Definir parâmetros de largura e altura (se necessário)
-                # Exemplo: window_instance.get_Parameter(BuiltInParameter.WINDOW_WIDTH).Set(width)
+                family_symbol = window_family_name
+            else:
+                continue  # Skip if not door or window
+
+            # Create the opening
+            opening_instance = doc.Create.NewFamilyInstance(opening_point, family_symbol, wall, Structure.StructuralType.NonStructural)
+            # Rotate the opening if necessary
+            if door_rotation_angle != 0:
+                axis = Line.CreateUnbound(opening_point, XYZ.BasisZ)
+                ElementTransformUtils.RotateElement(doc, opening_instance.Id, axis, door_rotation_angle)
     TransactionManager.Instance.TransactionTaskDone()
+
 
 
 #####################################################################

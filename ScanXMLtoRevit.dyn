@@ -27,8 +27,8 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "C:\\Users\\PunkRoque\\Downloads\\quarto_pipe\\structure.xml",
-      "InputValue": "C:\\Users\\PunkRoque\\Downloads\\quarto_pipe\\structure.xml"
+      "HintPath": "C:\\Users\\PunkRoque\\Downloads\\panamar_\\structure.xml",
+      "InputValue": "C:\\Users\\PunkRoque\\Downloads\\panamar_\\structure.xml"
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
@@ -74,8 +74,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
-      "SelectedIndex": 77,
-      "SelectedString": "M_Folha única:0864 x 2032mm",
+      "SelectedIndex": 74,
+      "SelectedString": "M_Folha única:0762 x 2032mm",
       "Id": "323ca54666b2491fae90b4c981605ddf",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -95,8 +95,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
-      "SelectedIndex": 73,
-      "SelectedString": "M_Fixo:Janela-1850",
+      "SelectedIndex": 68,
+      "SelectedString": "M_Fixo:0610 x 1220mm",
       "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -274,12 +274,6 @@
       "IsHidden": "False"
     },
     {
-      "Start": "7db9550e066347cc89f6808f741a43c1",
-      "End": "c50733668e5344f2844face69bc06535",
-      "Id": "1e816083ea3349be87148148dbfc6c1f",
-      "IsHidden": "False"
-    },
-    {
       "Start": "b9582a37b4f64dd2b6e94da16076842b",
       "End": "fb3d676808e14bab85418762df4c8a52",
       "Id": "de7685100fb9401d8b1c05e049e24fde",
@@ -287,22 +281,7 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "structure.xml",
-      "ReferenceType": "External",
-      "Nodes": [
-        "e34b9d74e3f44d9c9ad869c4f9537604"
-      ]
-    },
-    {
-      "Name": "RevisaoEnpos24.py",
-      "ReferenceType": "External",
-      "Nodes": [
-        "663f50f97b1b4c55be0c2e585e4cca84"
-      ]
-    }
-  ],
+  "NodeLibraryDependencies": [],
   "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
@@ -358,8 +337,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 213.7488821972928,
-        "Y": 186.95617807855118
+        "X": 196.19389936150014,
+        "Y": 175.85942322661802
       },
       {
         "Id": "e3e852b540ef45cea64d2808ccf24130",
@@ -408,8 +387,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 436.39993318932284,
-        "Y": 25.000577516455053
+        "X": 398.8441562240938,
+        "Y": -95.5839091928288
       },
       {
         "Id": "7c4ee5b6f8304027b51a0252c2458f88",
@@ -433,8 +412,8 @@
       }
     ],
     "Annotations": [],
-    "X": -31.575609390432533,
-    "Y": 186.49648034480927,
-    "Zoom": 0.49688188507177705
+    "X": 0.08390216707900322,
+    "Y": 63.42065998635485,
+    "Zoom": 0.7762701233670407
   }
 }
