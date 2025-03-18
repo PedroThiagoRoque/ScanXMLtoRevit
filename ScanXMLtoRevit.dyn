@@ -27,13 +27,13 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "C:\\Users\\PunkRoque\\Downloads\\panamar_\\structure.xml",
-      "InputValue": "C:\\Users\\PunkRoque\\Downloads\\panamar_\\structure.xml"
+      "HintPath": "D:\\Projetos\\ScanXMLtoRevit\\structureQP.xml",
+      "InputValue": ".\\structureQP.xml"
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
-      "SelectedIndex": 1,
-      "SelectedString": "Nível 1",
+      "SelectedIndex": 0,
+      "SelectedString": "1o PAV - TÉRREO",
       "Id": "e3e852b540ef45cea64d2808ccf24130",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -53,8 +53,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.WallTypes, DSRevitNodesUI",
-      "SelectedIndex": 14,
-      "SelectedString": "Genérico - 200 mm - Preenchido",
+      "SelectedIndex": 3,
+      "SelectedString": "Genérico - 14cm Alvenaria",
       "Id": "171c9097a43f4bd192d0fe9e517b4ded",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -74,8 +74,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
-      "SelectedIndex": 74,
-      "SelectedString": "M_Folha única:0762 x 2032mm",
+      "SelectedIndex": 146,
+      "SelectedString": "Porta paramétrica - 1 folha semioca:EDITÁVEL",
       "Id": "323ca54666b2491fae90b4c981605ddf",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -95,8 +95,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
-      "SelectedIndex": 68,
-      "SelectedString": "M_Fixo:0610 x 1220mm",
+      "SelectedIndex": 3,
+      "SelectedString": "Janela paramétrica - vidro fixo:EDITÁVEL",
       "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
       "NodeType": "ExtensionNode",
       "Inputs": [],
@@ -246,7 +246,7 @@
     {
       "Start": "ce52756e641b4716a80f04adf31e660d",
       "End": "eb352aa8e29846dfa3c9bb3ab8b8295c",
-      "Id": "2e1c2e525fdb428caf26793d93a823c4",
+      "Id": "2ac6a5bdf7c1434ab3ee75d883efb5ca",
       "IsHidden": "False"
     },
     {
@@ -274,6 +274,12 @@
       "IsHidden": "False"
     },
     {
+      "Start": "7db9550e066347cc89f6808f741a43c1",
+      "End": "c50733668e5344f2844face69bc06535",
+      "Id": "8ca3264e8d6d431f9cfc4a1b95099c15",
+      "IsHidden": "False"
+    },
+    {
       "Start": "b9582a37b4f64dd2b6e94da16076842b",
       "End": "fb3d676808e14bab85418762df4c8a52",
       "Id": "de7685100fb9401d8b1c05e049e24fde",
@@ -281,7 +287,22 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "structureQP.xml",
+      "ReferenceType": "External",
+      "Nodes": [
+        "e34b9d74e3f44d9c9ad869c4f9537604"
+      ]
+    },
+    {
+      "Name": "RevisaoEnpos24.py",
+      "ReferenceType": "External",
+      "Nodes": [
+        "663f50f97b1b4c55be0c2e585e4cca84"
+      ]
+    }
+  ],
   "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
@@ -313,7 +334,7 @@
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
       "Version": "3.2.1.5366",
-      "RunType": "Automatic",
+      "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
@@ -337,8 +358,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 196.19389936150014,
-        "Y": 175.85942322661802
+        "X": 243.13804297516867,
+        "Y": 108.25985642293531
       },
       {
         "Id": "e3e852b540ef45cea64d2808ccf24130",
@@ -347,8 +368,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 244.73570274112325,
-        "Y": 338.88047968802
+        "X": 181.66491903110403,
+        "Y": 320.4848344392644
       },
       {
         "Id": "171c9097a43f4bd192d0fe9e517b4ded",
@@ -367,8 +388,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 103.13054717238441,
-        "Y": 615.2828506539234
+        "X": 105.0564662513313,
+        "Y": 617.2087697328703
       },
       {
         "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
@@ -397,8 +418,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 1276.1746688265132,
-        "Y": 444.08577257028094
+        "X": 1246.1344104787925,
+        "Y": 348.3029080397431
       },
       {
         "Id": "468297e0c4f14e91b01f5147d0321de5",
@@ -407,13 +428,13 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 802.4082859544616,
-        "Y": 21.76857620823344
+        "X": 819.2948877514765,
+        "Y": -195.64642192833318
       }
     ],
     "Annotations": [],
-    "X": 0.08390216707900322,
-    "Y": 63.42065998635485,
-    "Zoom": 0.7762701233670407
+    "X": -270.9639452518883,
+    "Y": 266.070535727345,
+    "Zoom": 1.3509452745630373
   }
 }

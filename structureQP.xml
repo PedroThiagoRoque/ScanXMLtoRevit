@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<eoxObjects xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EOX_1.1-PRE4.xsd">
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.225571</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="3.351684" y="0.000000" z="-0.467360" />
+		<rotation w="-0.317320" x="0.000000" y="0.000000" z="0.948318" />
+		<child structure_type="Door">
+			<category>Other</category>
+			<orientation>inside</orientation>
+			<width>0.613849</width>
+			<height>2.082805</height>
+			<position x="1.507833" y="0.000000" z="0.120000" />
+			<rotation w="-0.317320" x="0.000000" y="-0.948318" z="0.000000" />
+			<parapet>0.000000</parapet>
+			<alignment>c</alignment>
+		</child>
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.078010</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="-2.556000" y="0.000000" z="-1.285511" />
+		<rotation w="0.948318" x="0.000000" y="0.000000" z="0.317320" />
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.211621</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="0.694502" y="0.000000" z="-3.740589" />
+		<rotation w="0.903077" x="0.000000" y="0.000000" z="-0.429478" />
+		<child structure_type="Window">
+			<category>Other</category>
+			<orientation>inside</orientation>
+			<width>1.849600</width>
+			<height>1.791850</height>
+			<position x="0.513213" y="0.000000" z="0.120000" />
+			<rotation w="0.903077" x="0.000000" y="0.429478" z="0.000000" />
+			<parapet>0.547350</parapet>
+			<alignment>r</alignment>
+			<centeroffset>0</centeroffset>
+			<windowsashlist>
+				<windowsash width="0.924800" />
+				<windowsash width="0.924800" />
+			</windowsashlist>
+		</child>
+	</object>
+	<object structure_type="Wall">
+		<category>Other</category>
+		<length>4.208879</length>
+		<height>2.581186</height>
+		<thickness>0.240000</thickness>
+		<color_r b="1.0" g="1.0" r="1.0" />
+		<color_l b="1.0" g="1.0" r="1.0" />
+		<position x="-0.022923" y="0.000000" z="2.075764" />
+		<rotation w="0.446183" x="0.000000" y="0.000000" z="0.894942" />
+		<child structure_type="Door">
+			<category>Other</category>
+			<orientation>inside</orientation>
+			<width>0.770563</width>
+			<height>2.120260</height>
+			<position x="0.879541" y="0.000000" z="0.120000" />
+			<rotation w="0.446183" x="0.000000" y="-0.894942" z="0.000000" />
+			<parapet>0.000000</parapet>
+			<alignment>r</alignment>
+		</child>
+	</object>
+	<object structure_type="Placeholder">
+		<label>table</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="2.334002" y="0.401065" z="-0.295416" />
+		<rotation w="-0.317320" x="0.000000" y="0.000000" z="0.948318" />
+		<size x="1.155782" y="0.802130" z="0.690333" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>table</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="-1.255127" y="0.209612" z="-1.855541" />
+		<rotation w="0.948318" x="0.000000" y="0.000000" z="0.317321" />
+		<size x="0.418985" y="0.419224" z="0.395371" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>sofa</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="-0.274027" y="0.375524" z="-2.244668" />
+		<rotation w="0.948318" x="0.000000" y="0.000000" z="0.317321" />
+		<size x="1.594512" y="0.751047" z="0.954778" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>chair</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="1.984045" y="0.517219" z="-0.551733" />
+		<rotation w="0.945241" x="0.000000" y="0.000000" z="0.326373" />
+		<size x="0.511226" y="1.034438" z="0.571398" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>storage</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="1.322517" y="0.434351" z="-2.333040" />
+		<rotation w="0.902646" x="0.000000" y="0.000000" z="-0.430384" />
+		<size x="0.660041" y="0.868702" z="0.393721" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>bed</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="-1.372317" y="0.324648" z="-0.816599" />
+		<rotation w="0.948318" x="0.000000" y="0.000000" z="0.317320" />
+		<size x="1.066195" y="0.649296" z="1.806815" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>storage</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="0.688757" y="0.619480" z="1.044503" />
+		<rotation w="-0.315259" x="0.000000" y="0.000000" z="0.949006" />
+		<size x="1.556860" y="1.238960" z="0.483238" />
+	</object>
+	<object structure_type="Placeholder">
+		<label>television</label>
+		<layer>EGR_Scan_Objects</layer>
+		<color b="0.7" g="0.7" r="0.7" />
+		<position x="2.496506" y="1.579946" z="-0.320713" />
+		<rotation w="-0.380810" x="0.000000" y="0.000000" z="0.924653" />
+		<size x="1.057880" y="0.693023" z="0.060000" />
+	</object>
+</eoxObjects>

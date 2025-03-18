@@ -105,14 +105,13 @@ def create_walls_in_revit(doc, lines, level, heights, wall_family_name):
     return walls
 
 
-# Função para criar portas e janelas no Revit
-def create_openings_in_revit(doc, walls, wall_data, door_family_name, window_family_name):
-    activate_family_symbol(door_family_name)
-    activate_family_symbol(window_family_name)
+def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_family_symbol):
+    activate_family_symbol(door_family_symbol)
+    activate_family_symbol(window_family_symbol)
     
     TransactionManager.Instance.EnsureInTransaction(doc)
     for wall, data in zip(walls, wall_data):
-        # Get wall's rotation and position
+        # Recupera a rotação e a posição da parede
         wall_transform = wall.Location.Curve.ComputeDerivatives(0.0, True)
         wall_origin = wall_transform.Origin
         wall_direction = wall_transform.BasisX
@@ -125,14 +124,22 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_name, window_fam
             position = child.find('position')
             width = meters_to_feet(float(child.find('width').text))
             height = meters_to_feet(float(child.find('height').text))
+            # Para janelas, lê o valor do peitoril (<parapet>)
+            parapet_val = None
+            if structure_type == 'Window':
+                parapet_elem = child.find('parapet')
+                if parapet_elem is not None:
+                    parapet_val = meters_to_feet(float(parapet_elem.text))
+            
+            # Lê as coordenadas
             x = meters_to_feet(float(position.get('x')))
             y = meters_to_feet(float(position.get('y')))
             z = meters_to_feet(float(position.get('z')))
             
-            # Door/Window local position
+            # Ponto local do objeto
             local_point = XYZ(x, y, z)
             
-            # Apply door/window's local rotation (if any)
+            # Aplica rotação local (se houver)
             rot = child.find('rotation')
             if rot is not None:
                 w_rot = float(rot.get('w'))
@@ -140,35 +147,51 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_name, window_fam
                 y_rot = float(rot.get('y'))
                 z_rot = float(rot.get('z'))
                 door_rotation_quat = (w_rot, x_rot, y_rot, z_rot)
-                # Convert quaternion to rotation angle (assuming rotation around Z-axis)
+                # Conversão para ângulo (supondo rotação em Z)
                 door_rotation_angle = 2 * math.acos(w_rot)
             else:
                 door_rotation_angle = 0
 
-            # Transform local position to global position
+            # Converte a posição local para posição global (com base na parede)
             cos_angle = math.cos(wall_rotation_angle)
             sin_angle = math.sin(wall_rotation_angle)
             global_x = wall_origin.X + (local_point.X * cos_angle - local_point.Y * sin_angle)
             global_y = wall_origin.Y + (local_point.X * sin_angle + local_point.Y * cos_angle)
             global_z = wall_origin.Z + local_point.Z
 
-            # Create the point in Revit
             opening_point = XYZ(global_x, global_y, global_z)
             
-            # Determine the family symbol based on the structure type
+            # Seleciona a família correta (porta ou janela)
             if structure_type == 'Door':
-                family_symbol = door_family_name
+                family_symbol = door_family_symbol
             elif structure_type == 'Window':
-                family_symbol = window_family_name
+                family_symbol = window_family_symbol
             else:
-                continue  # Skip if not door or window
+                continue  # Ignora se não for porta nem janela
 
-            # Create the opening
+            # Cria a instância da família
             opening_instance = doc.Create.NewFamilyInstance(opening_point, family_symbol, wall, Structure.StructuralType.NonStructural)
-            # Rotate the opening if necessary
-            if door_rotation_angle != 0:
+            
+            # Rotaciona a abertura se necessário (apenas para portas, normalmente)
+            if door_rotation_angle != 0 and structure_type == 'Door':
                 axis = Line.CreateUnbound(opening_point, XYZ.BasisZ)
                 ElementTransformUtils.RotateElement(doc, opening_instance.Id, axis, door_rotation_angle)
+            
+            # Para janelas, atualiza os parâmetros de largura, altura e peitoril
+            if structure_type == 'Window':
+                
+                param_width = opening_instance.LookupParameter("Largura")
+                if param_width:
+                    param_width.Set(width)
+
+                param_height = opening_instance.LookupParameter("Altura")
+                if param_height:
+                    param_height.Set(height)
+
+                if parapet_val is not None:
+                    param_parapet = opening_instance.LookupParameter("Altura do peitoril")
+                    if param_parapet:
+                        param_parapet.Set(parapet_val)
     TransactionManager.Instance.TransactionTaskDone()
 
 
