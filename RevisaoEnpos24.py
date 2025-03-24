@@ -159,15 +159,51 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
             global_y = wall_origin.Y + (local_point.X * sin_angle + local_point.Y * cos_angle)
             global_z = wall_origin.Z + local_point.Z
 
-            opening_point = XYZ(global_x, global_y, global_z)
-            
-            # Seleciona a família correta (porta ou janela)
+            # Lógica de posicionamento e seleção de família
             if structure_type == 'Door':
                 family_symbol = door_family_symbol
+                # Para portas, consideramos o ponto global calculado sem ajuste
+                opening_point = XYZ(global_x, global_y, global_z)
             elif structure_type == 'Window':
                 family_symbol = window_family_symbol
+                # --- Cálculo para janelas ---
+                # A partir do XML, o ponto (global_x, global_y, global_z) pode ser interpretado
+                # como a extremidade (início) da janela. Porém, como os parâmetros de largura e altura
+                # serão aplicados a partir do centro do objeto, devemos reajustar o ponto para ser o centro.
+                
+                # 1. Leitura do alinhamento: 
+                #    - 'r': o XML indica o início da janela à esquerda, de modo que a janela se estende para a direita.
+                #    - 'l': o XML indica o início da janela à direita, de modo que a janela se estende para a esquerda.
+                #    - 'c' (ou sem informação): o ponto já é o centro.
+                alignment_elem = child.find('alignment')
+                alignment = alignment_elem.text.lower() if alignment_elem is not None else 'c'
+                
+                # 2. Para o cálculo horizontal usamos o vetor unitário na direção da janela,
+                #    dado pelo ângulo de rotação (door_rotation_angle). 
+                #    Calculamos o deslocamento horizontal de metade da largura.
+                half_width = width / 2.0
+                if alignment == 'r':
+                    # Se 'r': o XML indica o início (lado esquerdo); o centro está à direita (soma do deslocamento)
+                    center_x = global_x - half_width * math.cos(door_rotation_angle)
+                    center_y = global_y - half_width * math.sin(door_rotation_angle)
+                elif alignment == 'l':
+                    # Se 'l': o XML indica o início (lado direito); o centro está à esquerda (subtração)
+                    center_x = global_x + half_width * math.cos(door_rotation_angle)
+                    center_y = global_y + half_width * math.sin(door_rotation_angle)
+                else:  # 'c' ou qualquer outro valor: assume que o ponto já é o centro horizontal
+                    center_x = global_x
+                    center_y = global_y
+                
+                # 3. Ajuste vertical: supondo que o XML defina o ponto na base da janela,
+                #    elevamos o ponto em metade da altura para centralizar verticalmente.
+                center_z = global_z + (height / 2.0)
+                
+                # Define o ponto final de inserção para a janela como seu centro
+                opening_point = XYZ(center_x, center_y, center_z)
             else:
                 continue  # Ignora se não for porta nem janela
+
+
 
             # Cria a instância da família
             opening_instance = doc.Create.NewFamilyInstance(opening_point, family_symbol, wall, Structure.StructuralType.NonStructural)
