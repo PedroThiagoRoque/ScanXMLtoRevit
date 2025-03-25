@@ -162,6 +162,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
             # Lógica de posicionamento e seleção de família
             if structure_type == 'Door':
                 family_symbol = door_family_symbol
+                
                 # Para portas, consideramos o ponto global calculado sem ajuste
                 opening_point = XYZ(global_x, global_y, global_z)
             elif structure_type == 'Window':
@@ -199,7 +200,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
                 center_z = global_z + (height / 2.0)
                 
                 # Define o ponto final de inserção para a janela como seu centro
-                opening_point = XYZ(center_x, center_y, center_z)
+                opening_point = XYZ(center_x + half_width, center_y, center_z) ##alterado
             else:
                 continue  # Ignora se não for porta nem janela
 
