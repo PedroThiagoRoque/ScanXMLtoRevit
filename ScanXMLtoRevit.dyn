@@ -27,8 +27,8 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "D:\\Projetos\\ScanXMLtoRevit\\structureQP.xml",
-      "InputValue": ".\\structureQP.xml"
+      "HintPath": "C:\\Users\\PunkRoque\\Documents\\EOX\\quarto_pipe\\structureQP.xml",
+      "InputValue": "C:\\Users\\PunkRoque\\Documents\\EOX\\quarto_pipe\\structureQP.xml"
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
@@ -132,8 +132,8 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "D:\\Projetos\\ScanXMLtoRevit\\RevisaoEnpos24.py",
-      "InputValue": ".\\RevisaoEnpos24.py"
+      "HintPath": "D:\\Projetos\\ScanXMLtoRevit\\Revisao0325.py",
+      "InputValue": ".\\Revisao0325.py"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
@@ -276,7 +276,7 @@
     {
       "Start": "7db9550e066347cc89f6808f741a43c1",
       "End": "c50733668e5344f2844face69bc06535",
-      "Id": "e2e480b80c3e4147bf6bd8815f4f693b",
+      "Id": "73616920d46d47778699d122e0358d3f",
       "IsHidden": "False"
     },
     {
@@ -287,22 +287,7 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "structureQP.xml",
-      "ReferenceType": "External",
-      "Nodes": [
-        "e34b9d74e3f44d9c9ad869c4f9537604"
-      ]
-    },
-    {
-      "Name": "RevisaoEnpos24.py",
-      "ReferenceType": "External",
-      "Nodes": [
-        "663f50f97b1b4c55be0c2e585e4cca84"
-      ]
-    }
-  ],
+  "NodeLibraryDependencies": [],
   "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
@@ -409,7 +394,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 398.8441562240938,
-        "Y": -95.5839091928288
+        "Y": -98.04824130963618
       },
       {
         "Id": "7c4ee5b6f8304027b51a0252c2458f88",
@@ -433,8 +418,8 @@
       }
     ],
     "Annotations": [],
-    "X": -38.843896411974015,
-    "Y": 100.9512832657635,
-    "Zoom": 0.5335872380249262
+    "X": 67.38540056884835,
+    "Y": 226.9250863669414,
+    "Zoom": 0.7654271407062648
   }
 }
