@@ -240,6 +240,35 @@
       "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
       "Replication": "Auto",
       "Description": "Lê um arquivo de texto e retorna o conteúdo como uma sequência de caracteres.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "Id": "84f89e77ac794752b16556c523eb1c5d",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "7e4d02c2524543f3b7f4b07978a3a7ae",
+          "Name": "path",
+          "Description": "Caminho para o arquivo como string.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1040895bad7340a594a52b2e4feedfa0",
+          "Name": "file",
+          "Description": "Objeto de arquivo",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria um objeto de arquivo com base no caminho fornecido"
     }
   ],
   "Connectors": [
@@ -275,8 +304,8 @@
     },
     {
       "Start": "7db9550e066347cc89f6808f741a43c1",
-      "End": "c50733668e5344f2844face69bc06535",
-      "Id": "73616920d46d47778699d122e0358d3f",
+      "End": "7e4d02c2524543f3b7f4b07978a3a7ae",
+      "Id": "d445ca10dd6d46058851d0f4fbabe219",
       "IsHidden": "False"
     },
     {
@@ -284,10 +313,31 @@
       "End": "fb3d676808e14bab85418762df4c8a52",
       "Id": "de7685100fb9401d8b1c05e049e24fde",
       "IsHidden": "False"
+    },
+    {
+      "Start": "1040895bad7340a594a52b2e4feedfa0",
+      "End": "c50733668e5344f2844face69bc06535",
+      "Id": "be1217eb01694da48e7435ac24c023da",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "structureQP.xml",
+      "ReferenceType": "External",
+      "Nodes": [
+        "e34b9d74e3f44d9c9ad869c4f9537604"
+      ]
+    },
+    {
+      "Name": "Revisao0325.py",
+      "ReferenceType": "External",
+      "Nodes": [
+        "663f50f97b1b4c55be0c2e585e4cca84"
+      ]
+    }
+  ],
   "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
@@ -324,15 +374,15 @@
     },
     "Camera": {
       "Name": "_Visualização do plano de fundo",
-      "EyeX": -2.9264307022094727,
-      "EyeY": 23.613143920898438,
-      "EyeZ": 23.295576095581055,
-      "LookX": 1.4660875797271729,
-      "LookY": -21.53132438659668,
-      "LookZ": -22.737939834594727,
-      "UpX": 0.03314387798309326,
-      "UpY": 0.8571667075157166,
-      "UpZ": -0.5139716267585754
+      "EyeX": -0.7941247820854187,
+      "EyeY": 20.46034049987793,
+      "EyeZ": 26.034805297851562,
+      "LookX": -0.13690143823623657,
+      "LookY": -18.59402847290039,
+      "LookZ": -25.238969802856445,
+      "UpX": -0.002202398143708706,
+      "UpY": 0.9135449528694153,
+      "UpZ": -0.4067319929599762
     },
     "ConnectorPins": [],
     "NodeViews": [
@@ -343,8 +393,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 243.13804297516867,
-        "Y": 108.25985642293531
+        "X": 59.926343440462574,
+        "Y": -82.83535966756509
       },
       {
         "Id": "e3e852b540ef45cea64d2808ccf24130",
@@ -353,8 +403,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 181.66491903110403,
-        "Y": 320.4848344392644
+        "X": 670.5125200054315,
+        "Y": 89.94734032685602
       },
       {
         "Id": "171c9097a43f4bd192d0fe9e517b4ded",
@@ -363,8 +413,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 105.85372324101405,
-        "Y": 472.31610705087
+        "X": 427.6651671373948,
+        "Y": 217.81566580495877
       },
       {
         "Id": "323ca54666b2491fae90b4c981605ddf",
@@ -373,8 +423,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 105.0564662513313,
-        "Y": 617.2087697328703
+        "X": 185.98184588521912,
+        "Y": 354.898610349396
       },
       {
         "Id": "fa1549066ea34f7a8bf0cb7ed2bafbde",
@@ -383,8 +433,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 155.9148736477024,
-        "Y": 757.825773742255
+        "X": 106.58842313410503,
+        "Y": 489.86551409959907
       },
       {
         "Id": "663f50f97b1b4c55be0c2e585e4cca84",
@@ -393,8 +443,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 398.8441562240938,
-        "Y": -98.04824130963618
+        "X": 361.32433236403665,
+        "Y": -231.31405523030148
       },
       {
         "Id": "7c4ee5b6f8304027b51a0252c2458f88",
@@ -403,8 +453,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 1246.1344104787925,
-        "Y": 348.3029080397431
+        "X": 1257.5721441012709,
+        "Y": 20.421210862028374
       },
       {
         "Id": "468297e0c4f14e91b01f5147d0321de5",
@@ -413,13 +463,23 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 812.6328858410653,
-        "Y": -160.85596750729667
+        "X": 959.6833912453535,
+        "Y": -257.93416559263005
+      },
+      {
+        "Id": "84f89e77ac794752b16556c523eb1c5d",
+        "Name": "File From Path",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 632.0253428101554,
+        "Y": -229.71706466607506
       }
     ],
     "Annotations": [],
-    "X": 67.38540056884835,
-    "Y": 226.9250863669414,
-    "Zoom": 0.7654271407062648
+    "X": 9.954314714845054,
+    "Y": 172.1587818946702,
+    "Zoom": 0.6046652306528476
   }
 }

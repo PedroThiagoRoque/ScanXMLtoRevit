@@ -34,7 +34,7 @@ def parse_xml(file_path):
 ###############################################################
 # Função para multiplicar dois quaternions
 ###############################################################
-def quaternion_multiply(q1, q2):
+'''def quaternion_multiply(q1, q2):
     w1, x1, y1, z1 = q1
     w2, x2, y2, z2 = q2
     w = w1*w2 - x1*x2 - y1*y2 - z1*z2
@@ -67,7 +67,7 @@ def apply_quaternion_rotation(point, origin, q):
     new_y = rotated_p[2] + origin.Y
     new_z = rotated_p[3] + origin.Z
     
-    return DSPoint.ByCoordinates(new_x, new_y, new_z)
+    return DSPoint.ByCoordinates(new_x, new_y, new_z)'''
 
 ###############################################################
 # Função para transformar um ponto do sistema XML para o sistema Dynamo
@@ -138,114 +138,197 @@ def create_walls_in_revit(doc, lines, level, heights, wall_family_name, created_
         created_element_ids.Add(wall.Id)
     TransactionManager.Instance.TransactionTaskDone()
     return walls
+###############################################################
+# Auxiliares para rotação de pontos
+###############################################################
+
+def quaternion_multiply(q1, q2):
+    w1, x1, y1, z1 = q1
+    w2, x2, y2, z2 = q2
+    w = w1*w2 - x1*x2 - y1*y2 - z1*z2
+    x = w1*x2 + x1*w2 + y1*z2 - z1*y2
+    y = w1*y2 - x1*z2 + y1*w2 + z1*x2
+    z = w1*z2 + x1*y2 - y1*x2 + z1*w2
+    return (w, x, y, z)
+
+def quaternion_conjugate(q):
+    w, x, y, z = q
+    return (w, -x, -y, -z)
+
+def apply_quaternion_rotation(point, pivot, q):
+    """
+    Rotaciona 'point' ao redor de 'pivot' usando o quaternion 'q'.
+    point e pivot são XYZ do Revit ou DSPoint convertidos.
+    Retorna o ponto rotacionado (XYZ).
+    """
+    # Converter para quaternion com w = 0, relativo ao pivot
+    px = point.X - pivot.X
+    py = point.Y - pivot.Y
+    pz = point.Z - pivot.Z
+    p = (0, px, py, pz)
+    
+    q_conj = quaternion_conjugate(q)
+    # Rotação: q * p * q^-1
+    q_p = quaternion_multiply(q, p)
+    rotated_p = quaternion_multiply(q_p, q_conj)
+    
+    # Volta para coordenadas globais
+    rx = rotated_p[1] + pivot.X
+    ry = rotated_p[2] + pivot.Y
+    rz = rotated_p[3] + pivot.Z
+    return XYZ(rx, ry, rz)
+
+def quaternion_from_angle_z(angle):
+    half = angle / 2.0
+    return (math.cos(half), 0.0, 0.0, math.sin(half))
+
 
 ###############################################################
 # Criação de portas e janelas no Revit
 ###############################################################
 def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_family_symbol, created_element_ids):
+    """
+    Cria portas e janelas (structure_type = 'Door' ou 'Window') em cada parede,
+    aplicando o mesmo método de rotação a ambas via quaternions.
+    """
+    # Ativa símbolos se necessário
+    def activate_family_symbol(fam_symbol):
+        if not fam_symbol.IsActive:
+            fam_symbol.Activate()
+            doc.Regenerate()
+
     activate_family_symbol(door_family_symbol)
     activate_family_symbol(window_family_symbol)
-    
+
     TransactionManager.Instance.EnsureInTransaction(doc)
+
     for wall, data in zip(walls, wall_data):
-        # Recupera a rotação e a posição da parede
-        wall_transform = wall.Location.Curve.ComputeDerivatives(0.0, True)
+        # 1) Obter origem e direção da parede
+        wall_curve = wall.Location.Curve
+        wall_transform = wall_curve.ComputeDerivatives(0.0, True)
         wall_origin = wall_transform.Origin
         wall_direction = wall_transform.BasisX
+
+        # 2) Calcular ângulo em relação ao eixo X global (rotação planar)
         wall_rotation_angle = wall_direction.AngleTo(XYZ(1, 0, 0))
         if wall_direction.Y < 0:
             wall_rotation_angle = -wall_rotation_angle
+        
+        # 3) Converter a rotação da parede num quaternion "pai"
+        parent_quat = quaternion_from_angle_z(wall_rotation_angle)
 
+        # 4) Percorrer cada filho (porta ou janela)
         for child in data.findall('child'):
             structure_type = child.get('structure_type')
-            position = child.find('position')
+            if structure_type not in ['Door','Window']:
+                continue
+            
+            # Dimensões (largura, altura, peitoril)
             width = meters_to_feet(float(child.find('width').text))
             height = meters_to_feet(float(child.find('height').text))
-            # Para janelas, lê o valor do peitoril (<parapet>)
+
             parapet_val = None
             if structure_type == 'Window':
                 parapet_elem = child.find('parapet')
                 if parapet_elem is not None:
                     parapet_val = meters_to_feet(float(parapet_elem.text))
             
-            # Lê as coordenadas
-            x = meters_to_feet(float(position.get('x')))
-            y = meters_to_feet(float(position.get('y')))
-            z = meters_to_feet(float(position.get('z')))
-            
-            # Ponto local do objeto
+            # Posição local no XML (em metros) => converter para pés
+            position_elem = child.find('position')
+            x = meters_to_feet(float(position_elem.get('x')))
+            y = meters_to_feet(float(position_elem.get('y')))
+            z = meters_to_feet(float(position_elem.get('z')))
             local_point = XYZ(x, y, z)
-            
-            # Aplica rotação local (se houver)
-            rot = child.find('rotation')
-            if rot is not None:
-                w_rot = float(rot.get('w'))
-                x_rot = float(rot.get('x'))
-                y_rot = float(rot.get('y'))
-                z_rot = float(rot.get('z'))
-                door_rotation_quat = (w_rot, x_rot, y_rot, z_rot)
-                door_rotation_angle = 2 * math.acos(w_rot)
+
+            # Rotação local (XML) em quaternion
+            rot_elem = child.find('rotation')
+            if rot_elem is not None:
+                w_rot = float(rot_elem.get('w'))
+                x_rot = float(rot_elem.get('x'))
+                y_rot = float(rot_elem.get('y'))
+                z_rot = float(rot_elem.get('z'))
+                child_quat = (w_rot, x_rot, y_rot, z_rot)
             else:
-                door_rotation_angle = 0
+                # Se não houver rotação, assume quaternion identity
+                child_quat = (1.0, 0.0, 0.0, 0.0)
 
-            # Converte a posição local para posição global (com base na parede)
-            cos_angle = math.cos(wall_rotation_angle)
-            sin_angle = math.sin(wall_rotation_angle)
-            global_x = wall_origin.X + (local_point.X * cos_angle - local_point.Y * sin_angle)
-            global_y = wall_origin.Y + (local_point.X * sin_angle + local_point.Y * cos_angle)
-            global_z = wall_origin.Z + local_point.Z
+            # 5) Combinar rotação do pai e do filho
+            global_quat = parent_quat #quaternion_multiply(parent_quat, child_quat)
 
-            # Lógica de posicionamento e seleção de família
-            if structure_type == 'Door':
-                family_symbol = door_family_symbol
-                opening_point = XYZ(global_x, global_y, global_z)
-            elif structure_type == 'Window':
-                family_symbol = window_family_symbol
-                # Alinhamento da janela
+            # 6) Rotacionar o ponto local
+            #    Aqui, pivot = (0,0,0), pois consideramos "local_point" relativo à base da parede
+            rotated_local = apply_quaternion_rotation(local_point, XYZ(0,0,0), global_quat)
+
+            # 7) Determinar a posição global (transladando pela origem da parede)
+            global_x = wall_origin.X + rotated_local.X
+            global_y = wall_origin.Y + rotated_local.Y
+            global_z = wall_origin.Z + rotated_local.Z
+
+            # 8) Ajuste de alinhamento (janelas, r/l/c)
+            if structure_type == 'Window':
                 alignment_elem = child.find('alignment')
                 alignment = alignment_elem.text.lower() if alignment_elem is not None else 'c'
+                
+                # Definindo offset local para "r","l","c"
                 half_width = width / 2.0
                 if alignment == 'r':
-                    # se "r": o XML indica o início (lado esquerdo)
-                    center_x = global_x - half_width * math.cos(door_rotation_angle)
-                    center_y = global_y - half_width * math.sin(door_rotation_angle)
+                    # por ex.: mover -half_width no eixo X local
+                    offset_local = XYZ(half_width, 0, 0)
                 elif alignment == 'l':
-                    # se "l": o XML indica o início (lado direito)
-                    center_x = global_x + half_width * math.cos(door_rotation_angle)
-                    center_y = global_y + half_width * math.sin(door_rotation_angle)
+                    offset_local = XYZ(-half_width, 0, 0)
                 else:
-                    center_x = global_x
-                    center_y = global_y
+                    offset_local = XYZ(0, 0, 0)
                 
-                center_z = global_z + (height / 2.0)
-                opening_point = XYZ(center_x + half_width, center_y, center_z)
-            else:
-                continue  # Ignora se não for porta nem janela
+                # Rotacionar esse offset_local pelo global_quat
+                offset_rotated = apply_quaternion_rotation(offset_local, XYZ(0,0,0), global_quat)
+                global_x += offset_rotated.X
+                global_y += offset_rotated.Y
 
-            # Cria a instância da família
-            opening_instance = doc.Create.NewFamilyInstance(opening_point, family_symbol, wall, Structure.StructuralType.NonStructural)
+                # Ajusta a altura para posicionar a janela no meio
+                global_z += height / 2.0
+            
+            elif structure_type == 'Door':
+                half_width = width / 2.0
+                # Se quiser aplicar offset similar pra portas
+                offset_local = XYZ(half_width, half_width, 0)
+                offset_rotated = apply_quaternion_rotation(offset_local, XYZ(0,0,0), global_quat)
+                global_x += offset_rotated.X
+                global_y += offset_rotated.Y
+                #global_z += offset_rotated.Z  # se necessário
+                #pass
+
+            # 9) Criar o ponto de inserção final e instanciar
+            opening_point = XYZ(global_x, global_y, global_z)
+            
+            if structure_type == 'Door':
+                family_symbol = door_family_symbol
+            else:  # Window
+                family_symbol = window_family_symbol
+
+            opening_instance = doc.Create.NewFamilyInstance(
+                opening_point,
+                family_symbol,
+                wall,
+                Structure.StructuralType.NonStructural
+            )
             created_element_ids.Add(opening_instance.Id)
 
-            # Rotaciona a abertura se necessário (apenas para portas)
-            if door_rotation_angle != 0 and structure_type == 'Door':
-                axis = Line.CreateUnbound(opening_point, XYZ.BasisZ)
-                ElementTransformUtils.RotateElement(doc, opening_instance.Id, axis, door_rotation_angle)
+            # 10) Ajustar parâmetros
+            param_width = opening_instance.LookupParameter("Largura")
+            if param_width:
+                param_width.Set(width)
+            
+            param_height = opening_instance.LookupParameter("Altura")
+            if param_height:
+                param_height.Set(height)
+            
+            if parapet_val is not None:
+                param_parapet = opening_instance.LookupParameter("Altura do peitoril")
+                if param_parapet:
+                    param_parapet.Set(parapet_val)
 
-            # Para janelas, atualiza os parâmetros de largura, altura e peitoril
-            if structure_type == 'Window':
-                param_width = opening_instance.LookupParameter("Largura")
-                if param_width:
-                    param_width.Set(width)
-
-                param_height = opening_instance.LookupParameter("Altura")
-                if param_height:
-                    param_height.Set(height)
-
-                if parapet_val is not None:
-                    param_parapet = opening_instance.LookupParameter("Altura do peitoril")
-                    if param_parapet:
-                        param_parapet.Set(parapet_val)
     TransactionManager.Instance.TransactionTaskDone()
+
 
 #####################################################################
 # A partir daqui, executamos a lógica principal do script
