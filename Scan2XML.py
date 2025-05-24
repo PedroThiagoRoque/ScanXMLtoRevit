@@ -230,7 +230,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
             height = meters_to_feet(float(child.find('height').text))
 
             parapet_val = None
-            if structure_type == 'Window':
+            if structure_type == 'Window' or structure_type == 'Door':
                 parapet_elem = child.find('parapet')
                 if parapet_elem is not None:
                     parapet_val = meters_to_feet(float(parapet_elem.text)) # adiciona a elevação do nível
@@ -324,7 +324,6 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
             if param_height:
                 param_height.Set(height)
             
-
             if parapet_val is not None:
                 param_parapet = opening_instance.LookupParameter("Altura do peitoril")
                 if param_parapet:

@@ -32,8 +32,8 @@
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
-      "SelectedIndex": 1,
-      "SelectedString": "2o PAV",
+      "SelectedIndex": 0,
+      "SelectedString": "1o PAV - TÉRREO",
       "Id": "e3e852b540ef45cea64d2808ccf24130",
       "NodeType": "ExtensionNode",
       "Inputs": [],
