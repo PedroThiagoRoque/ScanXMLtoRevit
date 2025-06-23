@@ -27,8 +27,8 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "C:\\Users\\PunkRoque\\Downloads\\structure.xml",
-      "InputValue": "C:\\Users\\PunkRoque\\Downloads\\structure.xml"
+      "HintPath": "C:\\Users\\PunkRoque\\Documents\\EOX\\ap_305_-_3\\structure.xml",
+      "InputValue": "C:\\Users\\PunkRoque\\Documents\\EOX\\ap_305_-_3\\structure.xml"
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
@@ -478,8 +478,8 @@
       }
     ],
     "Annotations": [],
-    "X": 121.37694363956689,
-    "Y": 182.9491593932122,
+    "X": 53.37694363956689,
+    "Y": 168.9491593932122,
     "Zoom": 0.41567822412798167
   }
 }
