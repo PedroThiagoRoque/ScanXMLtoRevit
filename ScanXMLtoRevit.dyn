@@ -27,8 +27,8 @@
       ],
       "Replication": "Disabled",
       "Description": "Permite selecionar um arquivo no sistema e retornar seu caminho",
-      "HintPath": "C:\\Users\\PunkRoque\\Documents\\EOX\\quarto_pipe\\structureQP.xml",
-      "InputValue": "C:\\Users\\PunkRoque\\Documents\\EOX\\quarto_pipe\\structureQP.xml"
+      "HintPath": "C:\\Users\\PunkRoque\\Downloads\\structure.xml",
+      "InputValue": "C:\\Users\\PunkRoque\\Downloads\\structure.xml"
     },
     {
       "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
@@ -324,7 +324,7 @@
   "Dependencies": [],
   "NodeLibraryDependencies": [
     {
-      "Name": "structureQP.xml",
+      "Name": "structure.xml",
       "ReferenceType": "External",
       "Nodes": [
         "e34b9d74e3f44d9c9ad869c4f9537604"
@@ -478,8 +478,8 @@
       }
     ],
     "Annotations": [],
-    "X": 179.165715568898,
-    "Y": 156.56360959223105,
-    "Zoom": 0.5974537186683728
+    "X": 121.37694363956689,
+    "Y": 182.9491593932122,
+    "Zoom": 0.41567822412798167
   }
 }

@@ -279,7 +279,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
                 elif alignment == 'l':
                     offset_local = XYZ(-half_width, 0, 0)
                 else:
-                    offset_local = XYZ(0, 0, 0)
+                    offset_local = XYZ(half_width, 0, 0)#XYZ(0, 0, 0)
                 
                 # Rotacionar esse offset_local pelo global_quat
                 offset_rotated = apply_quaternion_rotation(offset_local, XYZ(0,0,0), global_quat)
