@@ -195,6 +195,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "9b1e7b935c4b463b8fe115878776adfe",
+          "Name": "IN[5]",
+          "Description": "Input #5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -269,6 +278,27 @@
       ],
       "Replication": "Disabled",
       "Description": "Cria um objeto de arquivo com base no caminho fornecido"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
+      "SelectedIndex": 1,
+      "SelectedString": "Abertura paramétrica - Porta:Abertura paramétrica - Porta",
+      "Id": "7d1c41b1e4b54f978601596897b6d1a0",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1fcd3a90dbf14953aec672a5aa1c177a",
+          "Name": "Family Type",
+          "Description": "O Family Type selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todos os tipos de família disponíveis no documento."
     }
   ],
   "Connectors": [
@@ -319,25 +349,16 @@
       "End": "c50733668e5344f2844face69bc06535",
       "Id": "be1217eb01694da48e7435ac24c023da",
       "IsHidden": "False"
+    },
+    {
+      "Start": "1fcd3a90dbf14953aec672a5aa1c177a",
+      "End": "9b1e7b935c4b463b8fe115878776adfe",
+      "Id": "c9c0da75769c4bb38135017e110cc5e5",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "structure.xml",
-      "ReferenceType": "External",
-      "Nodes": [
-        "e34b9d74e3f44d9c9ad869c4f9537604"
-      ]
-    },
-    {
-      "Name": "Scan2XML.py",
-      "ReferenceType": "External",
-      "Nodes": [
-        "663f50f97b1b4c55be0c2e585e4cca84"
-      ]
-    }
-  ],
+  "NodeLibraryDependencies": [],
   "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
@@ -374,9 +395,9 @@
     },
     "Camera": {
       "Name": "_Visualização do plano de fundo",
-      "EyeX": -0.7941247820854187,
-      "EyeY": 20.46034049987793,
-      "EyeZ": 26.034805297851562,
+      "EyeX": -3.0011436343193054,
+      "EyeY": 20.015817642211914,
+      "EyeZ": 26.374265670776367,
       "LookX": -0.13690143823623657,
       "LookY": -18.59402847290039,
       "LookZ": -25.238969802856445,
@@ -393,8 +414,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 156.53078498801108,
-        "Y": -64.19239726365217
+        "X": 212.3610379792791,
+        "Y": -89.84413512450502
       },
       {
         "Id": "e3e852b540ef45cea64d2808ccf24130",
@@ -403,8 +424,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 670.5125200054315,
-        "Y": 89.94734032685602
+        "X": 573.9412715881031,
+        "Y": 86.92948881381454
       },
       {
         "Id": "171c9097a43f4bd192d0fe9e517b4ded",
@@ -443,8 +464,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 361.32433236403665,
-        "Y": -231.31405523030148
+        "X": 353.77970358143284,
+        "Y": -264.5104218737581
       },
       {
         "Id": "7c4ee5b6f8304027b51a0252c2458f88",
@@ -453,8 +474,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 1257.5721441012709,
-        "Y": 20.421210862028374
+        "X": 1245.5007380491047,
+        "Y": 41.54617145331895
       },
       {
         "Id": "468297e0c4f14e91b01f5147d0321de5",
@@ -463,8 +484,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 959.6833912453535,
-        "Y": -257.93416559263005
+        "X": 952.1387624627498,
+        "Y": -265.47879437523386
       },
       {
         "Id": "84f89e77ac794752b16556c523eb1c5d",
@@ -473,13 +494,23 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 632.0253428101554,
-        "Y": -229.71706466607506
+        "X": 622.9717882710307,
+        "Y": -264.4223570660525
+      },
+      {
+        "Id": "7d1c41b1e4b54f978601596897b6d1a0",
+        "Name": "Porta Types",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -20.50975882065603,
+        "Y": 636.9368511050789
       }
     ],
     "Annotations": [],
-    "X": 53.37694363956689,
-    "Y": 168.9491593932122,
-    "Zoom": 0.41567822412798167
+    "X": 407.5295263120656,
+    "Y": 147.25525429698484,
+    "Zoom": 0.38480398305408037
   }
 }

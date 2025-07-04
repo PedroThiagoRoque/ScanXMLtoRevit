@@ -186,7 +186,7 @@ def quaternion_from_angle_z(angle):
 ###############################################################
 # Criação de portas e janelas no Revit
 ###############################################################
-def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_family_symbol, created_element_ids, level):
+def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_family_symbol, alley_family_symbol, created_element_ids, level):
     """
     Cria portas e janelas (structure_type = 'Door' ou 'Window') em cada parede,
     aplicando o mesmo método de rotação a ambas via quaternions.
@@ -199,7 +199,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
 
     activate_family_symbol(door_family_symbol)
     activate_family_symbol(window_family_symbol)
-
+    activate_family_symbol(alley_family_symbol)
     TransactionManager.Instance.EnsureInTransaction(doc)
 
     level_elevation = level.Elevation  # Elevação do nível selecionado
@@ -222,7 +222,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
         # 4) Percorrer cada filho (porta ou janela)
         for child in data.findall('child'):
             structure_type = child.get('structure_type')
-            if structure_type not in ['Door','Window']:
+            if structure_type not in ['Door','Window', 'Alley']:
                 continue
             
             # Dimensões (largura, altura, peitoril)
@@ -289,7 +289,7 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
                 # Ajusta a altura para posicionar a janela no meio
                 global_z = height / 2.0
             
-            elif structure_type == 'Door':
+            elif structure_type in ['Door', 'Alley']:
                 half_width = width / 2.0
                 # Se quiser aplicar offset similar pra portas
                 offset_local = XYZ(half_width, half_width, 0)
@@ -304,8 +304,10 @@ def create_openings_in_revit(doc, walls, wall_data, door_family_symbol, window_f
             
             if structure_type == 'Door':
                 family_symbol = door_family_symbol
-            else:  # Window
+            elif structure_type == 'Window':  # Window
                 family_symbol = window_family_symbol
+            else:
+                family_symbol = alley_family_symbol
 
             opening_instance = doc.Create.NewFamilyInstance(
                 opening_point,
@@ -345,6 +347,7 @@ level_info = IN[1]
 wall_family_name = UnwrapElement(IN[2])
 door_family_name = UnwrapElement(IN[3])
 window_family_name = UnwrapElement(IN[4])
+alley_family_name  = UnwrapElement(IN[5])
 xml_data = parse_xml(file_path)
 
 doc = DocumentManager.Instance.CurrentDBDocument
@@ -410,7 +413,7 @@ if level is None:
 walls = create_walls_in_revit(doc, lines, level, heights, wall_family_name, created_element_ids)
 
 # Criar portas e janelas no Revit
-create_openings_in_revit(doc, walls, wall_data, door_family_name, window_family_name, created_element_ids, level)
+create_openings_in_revit(doc, walls, wall_data, door_family_name, window_family_name, alley_family_name, created_element_ids, level)
 
 # Agora, vamos agrupar todos os elementos criados usando a hora/minuto/segundo
 TransactionManager.Instance.EnsureInTransaction(doc)
